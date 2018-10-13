@@ -2,20 +2,21 @@ package com.example.maxli.dogsdogsdogs.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import com.example.maxli.dogsdogsdogs.R;
 import com.example.maxli.dogsdogsdogs.adapter.DogBreedsAdapter;
 import com.example.maxli.dogsdogsdogs.models.DogList;
 import com.example.maxli.dogsdogsdogs.network.DogAPI;
 import com.example.maxli.dogsdogsdogs.network.DogAPICallback;
+import com.maxli.dogsdogsdogs.R;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -40,6 +41,8 @@ public class MainActivity extends AppCompatActivity implements DogAPICallback{
         rvList.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         rvList.setLayoutManager(layoutManager);
+        rvList.addItemDecoration(new DividerItemDecoration(rvList.getContext(), DividerItemDecoration.VERTICAL));
+
 
         DogAPI.getInstance().getDogList(this, this);
     }
@@ -55,21 +58,27 @@ public class MainActivity extends AppCompatActivity implements DogAPICallback{
                 if (value.size() > 0) {
                     int valueSize = value.size();
                     for (int i = 0; i < valueSize; i++) {
-                        dogBreeds.add(value.get(i) + " " + key);
+                        dogBreeds.add(capitalize(value.get(i) + " " + key));
                     }
                 } else {
-                    dogBreeds.add(key);
+                    dogBreeds.add(capitalize(key));
                 }
             }
+            Collections.sort(dogBreeds);
             adapter = new DogBreedsAdapter(this, dogBreeds);
             rvList.setAdapter(adapter);
             loadingTextView.setVisibility(View.GONE);
             rvList.setVisibility(View.VISIBLE);
+
         }
     }
 
     @Override
     public void dogAPIGetFailed() {
         Log.d("MAX", "Failed!");
+    }
+
+    private String capitalize(final String line) {
+        return Character.toUpperCase(line.charAt(0)) + line.substring(1);
     }
 }
